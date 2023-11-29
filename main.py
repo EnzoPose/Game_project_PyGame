@@ -19,7 +19,7 @@ clock = pg.time.Clock()
 back_img = pg.image.load(r'assets\img\Backgrounds\forest\1920x1080.jpg')
 back_img = pg.transform.scale(back_img, (ANCHO_VENTANA, ALTO_VENTANA))
 
-vegeta = Player(diccionario_animaciones_personaje["idle"][0],(100,400),diccionario_animaciones_personaje,10,(40,80))
+vegeta = Player(diccionario_animaciones_personaje["idle"][0],(150,700),diccionario_animaciones_personaje,10,(40,80),100,20)
 
 
 floor = Platform("assets\img\Platforms\Metal_floor.png",(0,ALTO_VENTANA-100),None,10,(ANCHO_VENTANA,100))
@@ -50,8 +50,11 @@ trap = Item(saw_dict["idle"][0],(600,600),saw_dict,0,(40,40))
 
 juego_ejecutandose = True
 
-enemy = Enemy(enemy_dict["walk"][0],(750,300),enemy_dict,10,(100,100))
-enemy_list = [enemy]
+enemy = Enemy(enemy_dict["walk"][0], (750,300),enemy_dict,10,(100,100),100,20)
+
+enemy_2 = Enemy(enemy_dict["walk"][0], (500,400),enemy_dict,10,(100,100),100,20)
+enemy_3 = Enemy(enemy_dict["walk"][0], (800,400),enemy_dict,10,(100,100),100,20)
+enemy_list = [enemy,enemy_2,enemy_3]
 while juego_ejecutandose:
     lista_eventos = pg.event.get()
     for event in lista_eventos:
@@ -64,16 +67,20 @@ while juego_ejecutandose:
                 juego_ejecutandose = False
                 break
     
-
     screen.blit(back_img, back_img.get_rect())
 
     for platform in platform_list:
         platform.update(screen)    
 
     vegeta.update(screen,platform_list,coin_list,enemy_list)
-    enemy.update(screen,platform_list,[vegeta])
-    trap.update(screen)
     trap.animate(trap.actions["idle"])
+
+    for enemy in enemy_list:
+        if enemy.life <= 0:
+            enemy_list.remove(enemy)
+        else:
+            enemy.update(screen,platform_list,[vegeta])
+
 
     for coin in coin_list:
         if not coin.colition:
@@ -81,9 +88,8 @@ while juego_ejecutandose:
             coin.update(screen)
 
     if get_mode():
-        pg.draw.rect(screen,"Red",enemy.colliders["main"],2)
         for collider_side in vegeta.colliders:
-            pg.draw.rect(screen,"Blue",vegeta.colliders[collider_side],2)
+            pg.draw.rect(screen,"Purple",vegeta.colliders[collider_side],2)
 
         for platform in platform_list:
             for side_collider_key in platform.colliders:
@@ -93,10 +99,14 @@ while juego_ejecutandose:
         
         for projectile in vegeta.projectile_list:
             for side in projectile.colliders:
-                pg.draw.rect(screen,"Red",projectile.colliders[side],2)
+                pg.draw.rect(screen,"Yellow",projectile.colliders[side],2)
         
         for coin in coin_list:
             pg.draw.rect(screen,"Red",coin.rect,2)
+    
+        for enemy in enemy_list:
+            pg.draw.rect(screen,"Red",enemy.colliders["main"],2)
+            pg.draw.rect(screen,"Red",enemy.pov_rect,2)
     clock.tick(FPS)
     pg.display.update()
 

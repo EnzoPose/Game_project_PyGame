@@ -4,13 +4,12 @@ from models.Items.class_item import Item
 from models.constantes import ANCHO_VENTANA,ALTO_VENTANA
 
 class Player(Charapter):
-    def __init__(self, surface: pg.surface, initial_position: tuple, animations: dict, rect_diference: int,size:tuple):
-        super().__init__(surface, initial_position, animations, rect_diference,size)
+    def __init__(self, surface: pg.surface, initial_position: tuple, animations: dict, rect_diference: int,size:tuple,life:int,damage:int):
+        super().__init__(surface, initial_position, animations, rect_diference,size,life,damage)
     
-
+        self.is_invulnerable = False
         self.is_doing = None
         self.last_shot = 0
-        self.life = 0
         self.score = 0
 
 

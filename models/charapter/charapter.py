@@ -6,9 +6,11 @@ import pygame as pg
 
 class Charapter(Object):
 
-    def __init__(self, surface:pg.surface, initial_position: tuple ,animations:dict,rect_diference:int,size:int):
+    def __init__(self, surface:pg.surface, initial_position: tuple ,animations:dict,rect_diference:int,size:int,life:int,damage:int):
         super().__init__(surface,initial_position,animations,rect_diference, size)
         
+        self.life = life
+        self.damage = damage
         ##Movement 
         self.speed_x = 0
 
@@ -85,11 +87,11 @@ class Charapter(Object):
     def create_projectile(self,image_path,size):
         surface = pg.transform.scale(pg.image.load(image_path),size)
         if self.is_loking_right:
-            projectile = Projectile(surface,(self.rect.right, self.rect.centery - 20),None,0,size)
+            projectile = Projectile(surface,(self.rect.right, self.rect.centery - 20),None,0,size,self.damage)
             projectile.speed = 20
         else:
             surface = pg.transform.flip(surface,True,False)
-            projectile = Projectile(surface,(self.rect.left, self.rect.centery - 20),None,0,size)
+            projectile = Projectile(surface,(self.rect.left, self.rect.centery - 20),None,0,size,self.damage)
             projectile.speed = -20
         self.projectile_list.append(projectile)
 
@@ -99,7 +101,7 @@ class Charapter(Object):
             projectile.update(screen,platform_list,self.projectile_list,enemy_list)
             if projectile.colition:
                 projectile.kill(self.projectile_list)
-                print(len(self.projectile_list))
+
 
 
     def update(self,screen,platform_list,enemy_list):

@@ -1,12 +1,15 @@
 from models.auxiliar import SurfaceManager as sf 
 import pygame
 from auxiliar.configuraciones import flip_images
+import os
 
-def obtain_animation_list(list:list[str]):
-        aux_list = []
-        for path in list:
-                aux_list.append(pygame.image.load(path))
-        return aux_list
+def obtain_animations(dict:dict[str]):
+        loaded_images = {}
+        for key,values in dict.values():
+                loaded_frames = []
+                for frame in values:
+                        loaded_frames.append(pygame.image.load(fr"{frame}"))
+                loaded_images[key] = loaded_frames
 
 
 coin = [pygame.image.load(r"assets\img\Items\Coin\0.png"),
@@ -70,8 +73,8 @@ diccionario_animaciones_personaje["walk"] = personaje_walk
 diccionario_animaciones_personaje["walk_l"] = personaje_walk_l
 diccionario_animaciones_personaje["jump"] = personaje_jump
 diccionario_animaciones_personaje["jump_l"] = personaje_jump_l
-diccionario_animaciones_personaje["attack"] = personaje_attack
-diccionario_animaciones_personaje["attack_l"] = personaje_attack_l
+diccionario_animaciones_personaje[r"attack"] = personaje_attack
+diccionario_animaciones_personaje[r"attack_l"] = personaje_attack_l
 
 
 enemy_walk_l = [pygame.image.load(r"assets\img\Enemy\Walk\0.png"),
@@ -92,7 +95,18 @@ enemy_walk_l = [pygame.image.load(r"assets\img\Enemy\Walk\0.png"),
                 pygame.image.load(r"assets\img\Enemy\Walk\15.png"),]
 
 enemy_walk = flip_images(enemy_walk_l,True)
+enemy_attack_l = [pygame.image.load(r"assets\img\Enemy\Attack\0.png"),
+                pygame.image.load(r"assets\img\Enemy\Attack\1.png"),
+                pygame.image.load(r"assets\img\Enemy\Attack\2.png"),
+                pygame.image.load(r"assets\img\Enemy\Attack\3.png"),
+                pygame.image.load(r"assets\img\Enemy\Attack\4.png")]
+
+enemy_attack = flip_images(enemy_attack_l,True) 
+
 enemy_dict = {}
+
 
 enemy_dict["walk"] = enemy_walk
 enemy_dict["walk_l"] = enemy_walk_l
+enemy_dict["attack"] = enemy_attack
+enemy_dict["attack_l"] = enemy_attack_l

@@ -27,16 +27,18 @@
             ]
         },
         "Enemy": {},
-        "Boss": {}
+        "Boss": {},
+        "Items": {},
+        "Platforms":0
 
     },
 
     "Stats":{ 
-        "Level_1": 1,
+        "stage_1": 1,
 
-        "Level_2": 2,
+        "stage_2": 2,
 
-        "Level_3": 3,
+        "stage_3": 3,
 
         "Animations":1
     }
