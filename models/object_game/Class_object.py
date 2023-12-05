@@ -25,7 +25,7 @@ class Object:
         length = len(animation_list)
         if self.step_counter >= length:
             self.step_counter = 0
-        self.surface = animation_list[self.step_counter]
+        self.surface = animation_list[int(self.step_counter)]
         self.step_counter += 1
     
 

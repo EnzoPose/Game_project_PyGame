@@ -34,6 +34,8 @@ class Charapter(Object):
 
         self.colliders_thickness = rect_diference
 
+        self.projectile_collide_sound = pg.mixer.Sound("assets\img\Sounds\lasser_collide.mp3")
+
     
     def resize_animations(self):
         for key in self.animations: ## por cada key en el diccionario de animations del objeto
@@ -73,6 +75,7 @@ class Charapter(Object):
         for projectile in self.projectile_list:
             projectile.update(screen,platform_list,self.projectile_list,enemy_list)
             if projectile.colition:
+                self.projectile_collide_sound.play()
                 projectile.kill(self.projectile_list)
 
 

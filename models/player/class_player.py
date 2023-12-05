@@ -12,6 +12,11 @@ class Player(Charapter):
         self.is_doing = None
         self.last_shot = 0
         self.score = 0
+        
+        self.attack_sound = pg.mixer.Sound("assets\img\Sounds\player_attack.mp3")
+        self.collect_coin_sound = pg.mixer.Sound("assets\img\Sounds\collect_coin.mp3")
+        self.jump_sound = pg.mixer.Sound("assets\img\Sounds\jump.mp3")
+        self.attack_sound.set_volume(0.1)
 
 
     def verify_player_events(self):
@@ -27,7 +32,6 @@ class Player(Charapter):
                 self.is_doing = "jump"
         elif event[pg.K_SPACE] and not event[pg.K_LEFT] and not event[pg.K_RIGHT]:
             self.is_doing = "attack"
-
         else:
             self.is_doing = "stay"
 
@@ -57,6 +61,7 @@ class Player(Charapter):
 
             case "jump":
                 if not self.is_jumping:
+                    self.jump_sound.play()
                     self.is_jumping = True
                     self.displacement_y = self.jump_power
                     self.animate(self.animations["jump"]) if self.is_loking_right else self.animate(self.animations["jump_l"])
@@ -69,6 +74,7 @@ class Player(Charapter):
                 else:
                     self.animate(self.animations["attack_l"])
                 if now - self.last_shot > self.cadence:
+                    self.attack_sound.play()
                     self.create_projectile(r"assets\img\Player\Attack\projectile\0.png",(30,30))
                     self.last_shot = now
 
@@ -94,11 +100,12 @@ class Player(Charapter):
             self.displacement_y = 3
 
 
-    def verify_colition_item(self,item_list:list[Item]):
+    def verify_colition_coin(self,item_list:list[Item]):
         for item in item_list:
             if self.colliders["main"].colliderect(item.colliders["main"]) and item.get_colition() == False:
                 item.set_colition(True)
                 item.kill(item_list)
+                self.collect_coin_sound.play()
                 self.score += 300
 
     
@@ -130,13 +137,20 @@ class Player(Charapter):
             elif self.colliders["top"].colliderect(platform.colliders["bottom"]):
                 self.displacement_y = 3
 
+    def set_sound_volume(self,sound_volume):
+        self.volume = sound_volume
+        self.jump_sound.set_volume(self.volume)
+        self.attack_sound.set_volume(self.volume)
+        self.collect_coin_sound.set_volume(self.volume)
+        self.projectile_collide_sound.set_volume(self.volume)
 
-    def update(self,screen,platform_list,coin_list,enemy_list):
+    def update(self,screen,platform_list,coin_list,enemy_list,sounds_volume):
+        self.set_sound_volume(sounds_volume)
         self.verify_screen_limit(ANCHO_VENTANA)
         self.verify_player_events()
         self.do_actions()
         self.verify_colission_platforms(platform_list)
-        self.verify_colition_item(coin_list)
+        self.verify_colition_coin(coin_list)
 
         self.move_x()
         super().update(screen,platform_list,enemy_list)

@@ -6,13 +6,17 @@ from models.platform.class_patform import Platform
 from models.Items.class_item import Item
 from auxiliar.modo import *
 from auxiliar.animaciones import player_animations,coin_animations,saw_animations,enemy_animations
+from models.constantes import ANCHO_VENTANA,ALTO_VENTANA
+from models.values import Values
 
 class Stage:
     def __init__(self,screen,w,h,stage_name) -> None:
+
         self.stage_name = stage_name
         self.stage_configs = self.get_configs()
         self.bgd = self.stage_configs.get("Scenario").get("Background")
         self.bgd_surface = pg.image.load(self.bgd)
+        self.bgd_surface = pg.transform.scale(self.bgd_surface,(ANCHO_VENTANA,ALTO_VENTANA))
         self.font = pg.font.SysFont("consolas",30)
         self.player_configs = self.stage_configs.get("Player")
         self.enemy_configs = self.stage_configs.get("Enemies")
@@ -26,6 +30,8 @@ class Stage:
         self.background_img = pg.transform.scale(background_surface,(self.w,self.h))
         self.win = False
         self.is_paused = False
+        self.time = False
+        self.sounds_volume = 0.1
 
         self.player = Player(player_animations["idle"][0],self.player_configs.get("Coords"),player_animations,10,self.player_configs.get("Size"),self.player_configs.get("Life"),
                             self.player_configs.get("Damage"))
@@ -45,7 +51,7 @@ class Stage:
         for i in range(self.enemy_configs.get("Amount")):
             enemy_list.append(Enemy(enemy_animations["walk"][0],self.enemy_configs.get("Coords")[i],
                                     enemy_animations,10,self.enemy_configs.get("Size"),self.enemy_configs.get("Life"),
-                                    self.enemy_configs.get("Damage")))
+                                    self.enemy_configs.get("Damage"),self.enemy_configs.get("Cadence")))
         return enemy_list
 
     def set_coins(self)-> list[Item]:
@@ -119,13 +125,13 @@ class Stage:
         for platform in self.platforms:
             platform.update(self.screen)
 
-        self.player.update(self.screen,self.platforms,self.coins,self.enemies)
+        self.player.update(self.screen,self.platforms,self.coins,self.enemies,self.sounds_volume)
 
         for enemy in self.enemies:
             if enemy.life <= 0:
                 self.enemies.remove(enemy)
             else:
-                enemy.update(self.screen,self.platforms,[self.player])
+                enemy.update(self.screen,self.platforms,[self.player],self.sounds_volume)
         
         for coin in self.coins:
             if not coin.colition:
@@ -135,9 +141,10 @@ class Stage:
         if get_mode():
             self.draw_debug_mode()
 
+    def update_volume(self,values:Values):
+        self.sounds_volume = values.sound_volume
 
-
-    def run(self):
-        if not self.is_paused:
-            self.update_screen()
-            self.check_win()
+    def run(self,values):
+        self.update_volume(values)
+        self.update_screen()
+        self.check_win()
